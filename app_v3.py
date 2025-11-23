@@ -206,13 +206,16 @@ class HandGame:
         # =================================================
         spawned_boss = False
         
-        if self.current_difficulty == "HARD" and self.score >= 64:
-            if random.random() < 0.9: # 90% chance
+        if self.current_difficulty == "EASY" and np.log2(self.score) == np.floor(np.log2(self.score)):
+            chance = 1
+            # chance = np.log2(self.score)/50
+            if random.random() < chance: # 90% chance
                 enemy_type = 'boss'
                 enemy_color = (0, 255, 255) # Yellowish fallback
                 icon_img = self.img_enemy_special
                 spawned_boss = True
                 print("DEBUG: BOSS SPAWNED!")
+
 
         # If not boss, do standard logic
         if not spawned_boss:
@@ -500,6 +503,8 @@ class HandGame:
                                     self.score += 10
                                     # Transform Ship!
                                     if self.img_ship_evolved is not None:
+                                        self.icons_pinch = self.load_images_from_folder("src/icons/special_pinch")
+                                        self.icons_fist = self.load_images_from_folder("src/icons/special_fist")
                                         self.current_ship_img = self.img_ship_evolved
                                     print("BOSS DEFEATED! SHIP EVOLVED!")
                                 else:
