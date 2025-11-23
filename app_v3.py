@@ -13,19 +13,26 @@ from src.Components import Button, VirtualKeyboard
 # ==========================================
 class HandGame:
     def __init__(self):
+        # --- Window Setup (Fullscreen) ---
+        self.window_name = "Hand Game Ultimate"
+        # Create the window first to apply fullscreen properties
+        cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
+        cv2.setWindowProperty(self.window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
         # --- Camera Setup ---
         self.cap = cv2.VideoCapture(0)
         
-        # Request 1280x720, but don't trust it blindly
+        # We try to request a decent HD resolution. 
+        # Even if the camera forces 640x480, the fullscreen window will stretch it to fit the monitor.
+        # Because we use relative coordinates for UI, alignment remains perfect.
         self.cap.set(3, 1280)
         self.cap.set(4, 720)
         
-        # [CRITICAL FIX] Read the ACTUAL resolution provided by the hardware
+        # Read actual camera dimensions
         success, img = self.cap.read()
         if success:
             self.height, self.width, _ = img.shape
         else:
-            # Fallback defaults if camera fails immediately
             self.width = 1280
             self.height = 720
             
@@ -46,15 +53,16 @@ class HandGame:
         self.is_guest = False 
         self.current_difficulty = "NORMAL"
         
+        # --- Gesture Logic ---
         self.hand_clicked_status = {} 
         self.pinch_threshold = 40
         self.enable_special_enemies = False 
 
         # --- Assets ---
-        self.icons_pinch = self.load_images_from_folder("src/icons/pinch")
-        self.icons_fist = self.load_images_from_folder("src/icons/fist")
+        self.icons_pinch = self.load_images_from_folder("icons/pinch")
+        self.icons_fist = self.load_images_from_folder("icons/fist")
 
-        # --- UI Initialization (Dynamic) ---
+        # --- UI Initialization ---
         self.init_ui_elements()
 
         self.enemies = []
@@ -64,26 +72,24 @@ class HandGame:
 
     def init_ui_elements(self):
         """
-        [MODIFIED] All UI positions are calculated based on self.width and self.height.
-        This ensures the game looks correct on ANY resolution (640x480, 1280x720, 1920x1080).
+        Calculates UI positions based on the actual camera image size (self.width, self.height).
+        Since the image is stretched to fullscreen, these relative positions scale perfectly.
         """
         W, H = self.width, self.height
-        cx = W // 2  # Center X
-        cy = H // 2  # Center Y
+        cx = W // 2  
+        cy = H // 2  
         
-        # Standard Button Size relative to screen height
-        btn_w = int(W * 0.2) # 20% of screen width
-        btn_h = int(H * 0.08) # 8% of screen height
+        # Dynamic Sizes
+        btn_w = int(W * 0.2) 
+        btn_h = int(H * 0.08) 
         btn_size = (btn_w, btn_h)
         
-        # Virtual Keyboard Position
         self.keyboard = VirtualKeyboard(int(W * 0.3), int(H * 0.3))
         
         # --- 1. LOGIN SCREEN ---
         self.btn_skip = Button("SKIP (GUEST)", (W - btn_w - 20, H - btn_h - 20), size=btn_size, color=(150, 200, 255))
         
         # --- 2. CONFIRM / DIALOGS ---
-        # Centered dialog buttons
         self.btn_confirm_yes = Button("CONFIRM", (cx - btn_w - 10, cy + 50), size=btn_size, color=(150, 255, 150))
         self.btn_confirm_no = Button("GO BACK", (cx + 10, cy + 50), size=btn_size, color=(255, 150, 150))
 
@@ -98,12 +104,11 @@ class HandGame:
         self.btn_exit = Button("EXIT", (cx - btn_w//2, start_y + step_y * 2), size=btn_size)
 
         # --- 4. DIFFICULTY SCREEN ---
-        # Spread 3 buttons horizontally
         gap = int(W * 0.05)
         total_w = 3 * btn_w + 2 * gap
         start_x = (W - total_w) // 2
-        
         diff_y = int(H * 0.4)
+        
         self.btn_easy = Button("EASY", (start_x, diff_y), size=btn_size, color=(150, 255, 150))
         self.btn_med = Button("NORMAL", (start_x + btn_w + gap, diff_y), size=btn_size, color=(150, 150, 255))
         self.btn_hard = Button("HARD", (start_x + 2*(btn_w + gap), diff_y), size=btn_size, color=(150, 150, 150))
@@ -112,15 +117,10 @@ class HandGame:
         self.btn_back = Button("BACK", (cx - btn_w//2, H - btn_h - 30), size=btn_size)
 
         # --- 5. RECORDS SCREEN ---
-        # Bottom row buttons
         self.btn_back_rec = Button("BACK", (W - btn_w - 30, H - btn_h - 30), size=btn_size)
         self.btn_delete_user = Button("DELETE USER", (30, H - btn_h - 30), size=btn_size, color=(100, 100, 255))
-        
-        # Middle actions
         self.btn_switch_user = Button("SWITCH USER", (cx - btn_w//2, H - btn_h - 30), size=btn_size, color=(255, 255, 150))
         self.btn_add_user = Button("ADD USER", (cx - btn_w//2, H - btn_h * 2 - 50), size=btn_size, color=(200, 255, 200))
-        
-        # Keyboard back button
         self.btn_back_to_record_kb = Button("BACK", (30, H - btn_h - 30), size=btn_size, color=(255, 100, 100))
 
         # --- 6. SWITCH USER ---
@@ -128,6 +128,7 @@ class HandGame:
         self.btn_back_from_switch = Button("BACK", (cx - btn_w//2, H - btn_h - 20), size=btn_size)
 
         # --- 7. PAUSE OVERLAY ---
+        # Pause button stuck to top-right
         pause_size = int(W * 0.06)
         self.btn_pause = Button("II", (W - pause_size - 20, 20), size=(pause_size, int(pause_size*0.8)), color=(255, 255, 200))
         
@@ -141,6 +142,7 @@ class HandGame:
         if not os.path.exists(folder): return []
         for filename in os.listdir(folder):
             try:
+                # Load image with Alpha Channel (UNCHANGED)
                 img = cv2.imread(os.path.join(folder, filename), cv2.IMREAD_UNCHANGED)
                 if img is not None: images.append(img)
             except: pass
@@ -151,8 +153,6 @@ class HandGame:
         self.user_buttons = []
         
         W, H = self.width, self.height
-        
-        # Grid settings
         margin_x = int(W * 0.1)
         margin_y = int(H * 0.2)
         
@@ -161,15 +161,15 @@ class HandGame:
         gap_x = 20
         gap_y = 20
         
-        cols = 3
+        # Calculate columns based on width
+        cols = max(1, (W - 2 * margin_x) // (btn_w + gap_x))
         
         for i, u_name in enumerate(users):
             row = i // cols
             col = i % cols
             x = margin_x + col * (btn_w + gap_x)
             y = margin_y + row * (btn_h + gap_y)
-            
-            if i < 12: # Limit to fit screen
+            if i < 12:
                 self.user_buttons.append(Button(u_name, (x, y), size=(btn_w, btn_h)))
 
     def set_difficulty(self, level):
@@ -203,7 +203,6 @@ class HandGame:
                 enemy_type = 'square'
                 enemy_color = (255, 0, 0)
 
-        # Pick random icon if available
         if is_special and self.icons_fist:
             icon_img = random.choice(self.icons_fist)
         elif not is_special and self.icons_pinch:
@@ -213,7 +212,7 @@ class HandGame:
             'x': x, 'y': y,
             'vx': math.cos(angle) * speed,
             'vy': math.sin(angle) * speed,
-            'radius': int(self.width * 0.03), # Radius relative to screen width
+            'radius': int(self.width * 0.035), # Scaled radius
             'color': enemy_color,
             'type': enemy_type,
             'icon': icon_img
@@ -221,7 +220,6 @@ class HandGame:
 
     def draw_enemy_icon(self, bg_img, icon, x, y, size):
         diameter = size * 2
-        # Safe resize check
         if diameter <= 0: return 
         try:
             icon_resized = cv2.resize(icon, (diameter, diameter))
@@ -231,11 +229,9 @@ class HandGame:
         y1, y2 = y - h // 2, y + h // 2
         x1, x2 = x - w // 2, x + w // 2
 
-        # Boundary Check
         if y1 < 0 or y2 > bg_img.shape[0] or x1 < 0 or x2 > bg_img.shape[1]:
             return 
 
-        # Check if icon has alpha channel
         if icon_resized.shape[2] == 4:
             alpha_s = icon_resized[:, :, 3] / 255.0
             alpha_l = 1.0 - alpha_s
@@ -243,7 +239,6 @@ class HandGame:
                 bg_img[y1:y2, x1:x2, c] = (alpha_s * icon_resized[:, :, c] +
                                            alpha_l * bg_img[y1:y2, x1:x2, c])
         else:
-            # No alpha, just copy
             bg_img[y1:y2, x1:x2] = icon_resized
 
     def detect_fist_logic(self, img, hand_lms):
@@ -257,8 +252,9 @@ class HandGame:
             total_dist += dist
         middle_mcp = hand_lms.landmark[9]
         cx, cy = int(middle_mcp.x * w), int(middle_mcp.y * h)
-        # Threshold relative to screen height to handle resolution changes
-        threshold = h * 0.5 
+        
+        # Threshold scales with screen height to support different resolutions
+        threshold = h * 0.6 
         is_fist = total_dist < threshold
         return is_fist, (cx, cy)
 
@@ -294,11 +290,11 @@ class HandGame:
             success, img = self.cap.read()
             if not success: break
             
-            # [IMPORTANT] Update width/height if window is resized manually (optional but good)
+            # Optional: Handle Manual Resize (if user exits fullscreen)
             # h, w, _ = img.shape
             # if self.width != w or self.height != h:
             #     self.width, self.height = w, h
-            #     self.init_ui_elements() # Re-calc buttons
+            #     self.init_ui_elements()
 
             img = cv2.flip(img, 1)
             img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -353,11 +349,9 @@ class HandGame:
                         self.state = "RECORDS"
 
             elif self.state == "CONFIRM_ACTION":
-                # Dynamic Box
                 box_x1, box_x2 = int(self.width * 0.25), int(self.width * 0.75)
                 box_y1, box_y2 = int(self.height * 0.3), int(self.height * 0.7)
                 cv2.rectangle(overlay, (box_x1, box_y1), (box_x2, box_y2), (255, 255, 255), -1)
-                
                 cv2.putText(img, f"Confirm: '{self.keyboard.input_text}'?", (box_x1 + 20, box_y1 + 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
 
                 for btn in [self.btn_confirm_yes, self.btn_confirm_no]:
@@ -369,7 +363,6 @@ class HandGame:
                         self.current_user = self.keyboard.input_text
                         self.is_guest = False
                         self.db.register_user(self.current_user)
-                        
                         if self.next_state_after_confirm == "LOGIN_SUCCESS": self.state = "MENU"
                         elif self.next_state_after_confirm == "ADD_SUCCESS": self.state = "RECORDS"
                     elif self.btn_confirm_no.is_hovering(*click_pos):
@@ -380,7 +373,6 @@ class HandGame:
                 box_x1, box_x2 = int(self.width * 0.2), int(self.width * 0.8)
                 box_y1, box_y2 = int(self.height * 0.3), int(self.height * 0.7)
                 cv2.rectangle(overlay, (box_x1, box_y1), (box_x2, box_y2), (200, 200, 255), -1)
-                
                 cv2.putText(img, "ARE YOU SURE?", (box_x1 + 50, box_y1 + 50), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0,0,0), 2)
 
                 for btn in [self.btn_delete_yes, self.btn_delete_no]:
@@ -524,7 +516,7 @@ class HandGame:
                     if self.btn_back.is_hovering(*click_pos): self.state = "MENU"
 
             elif self.state == "RECORDS":
-                cv2.rectangle(overlay, (50, 50), (self.width - 50, self.height - 50), (240, 240, 240), -1)
+                cv2.rectangle(overlay, (100, 100), (self.width - 100, self.height - 50), (240, 240, 240), -1)
                 cv2.putText(img, "PLAYER RECORDS", (int(self.width*0.35), 120), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (50, 50, 50), 3)
                 if self.is_guest:
                     cv2.putText(img, "Guest User - No Records", (int(self.width*0.3), 300), cv2.FONT_HERSHEY_SIMPLEX, 1, (100,100,100), 2)
@@ -574,6 +566,11 @@ class HandGame:
             cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0, img)
 
             # --- STEP 4: DRAW TEXT LAYERS ---
+            # Note: Re-enable specific draws if alpha blending makes text blurry.
+            # For simplicity, the overlaid text from earlier steps (via draw_on_overlay logic usually only draws boxes)
+            # might need explicit text redraws here if Button class handles text separately.
+            
+            # Force redraw text on top layer to ensure sharpness
             if self.state == "LOGIN": 
                 self.keyboard.draw_text(img)
                 self.btn_skip.draw_text_and_border(img)
@@ -623,7 +620,8 @@ class HandGame:
                 else:
                     cv2.circle(img, (cx, cy), 15, (0, 0, 255), 2)  
 
-            cv2.imshow("Hand Game Ultimate Final", img)
+            # Display using the named fullscreen window
+            cv2.imshow(self.window_name, img)
             if cv2.waitKey(1) & 0xFF == 27: break
 
         self.cap.release()
