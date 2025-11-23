@@ -199,7 +199,7 @@ class HandGame:
 
         # --- Fist Logic Variable ---
         self.hand_fist_status = {}
-        self.fist_threshold = 60 # Distance between fingertips and knuckles to determine fist shape
+        self.fist_threshold = 30 # Distance between fingertips and knuckles to determine fist shape
 
         # --- Instantiate UI ---
         self.keyboard = VirtualKeyboard(400, 250)

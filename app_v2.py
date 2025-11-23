@@ -151,13 +151,15 @@ class HandGame:
         Checks the distance of 4 finger tips (Index, Middle, Ring, Pinky) to the Wrist (0).
         """
         h, w, _ = img.shape
-        wrist = hand_lms.landmark[0]
+        # wrist = hand_lms.landmark[0]
         finger_tips = [8, 12, 16, 20]
         
         total_dist = 0
         for tip_id in finger_tips:
             tip = hand_lms.landmark[tip_id]
-            dist = math.hypot(tip.x * w - wrist.x * w, tip.y * h - wrist.y * h)
+            hand_point = hand_lms.landmark[tip_id - 3]
+            # dist = math.hypot(tip.x * w - wrist.x * w, tip.y * h - wrist.y * h)
+            dist = math.hypot(tip.x * w - hand_point.x * w, tip.y * h - hand_point.y * h)
             total_dist += dist
 
         # Use Middle Finger MCP (9) as the center point of the fist impact

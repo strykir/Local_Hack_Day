@@ -14,5 +14,37 @@
             "best_score": 0,
             "history": []
         }
+    },
+    "QYY": {
+        "EASY": {
+            "best_score": 1,
+            "history": [
+                1
+            ]
+        },
+        "NORMAL": {
+            "best_score": 0,
+            "history": []
+        },
+        "HARD": {
+            "best_score": 0,
+            "history": []
+        }
+    },
+    "YYY": {
+        "EASY": {
+            "best_score": 17,
+            "history": [
+                17
+            ]
+        },
+        "NORMAL": {
+            "best_score": 0,
+            "history": []
+        },
+        "HARD": {
+            "best_score": 0,
+            "history": []
+        }
     }
 }
