@@ -14,5 +14,43 @@
             "best_score": 0,
             "history": []
         }
+    },
+    "POLY": {
+        "EASY": {
+            "best_score": 0,
+            "history": []
+        },
+        "NORMAL": {
+            "best_score": 2,
+            "history": [
+                2
+            ]
+        },
+        "HARD": {
+            "best_score": 0,
+            "history": []
+        }
+    },
+    "POLYNOMIAL": {
+        "EASY": {
+            "best_score": 0,
+            "history": []
+        },
+        "NORMAL": {
+            "best_score": 54,
+            "history": [
+                46,
+                54
+            ]
+        },
+        "HARD": {
+            "best_score": 23,
+            "history": [
+                23,
+                3,
+                4,
+                16
+            ]
+        }
     }
 }
