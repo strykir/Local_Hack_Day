@@ -12,5 +12,39 @@
             "best_score": 0,
             "history": []
         }
+    },
+    "SEAN": {
+        "EASY": {
+            "best_score": 4,
+            "history": [
+                4
+            ]
+        },
+        "NORMAL": {
+            "best_score": 24,
+            "history": [
+                24
+            ]
+        },
+        "HARD": {
+            "best_score": 1,
+            "history": [
+                1
+            ]
+        }
+    },
+    "S": {
+        "EASY": {
+            "best_score": 0,
+            "history": []
+        },
+        "NORMAL": {
+            "best_score": 0,
+            "history": []
+        },
+        "HARD": {
+            "best_score": 0,
+            "history": []
+        }
     }
 }

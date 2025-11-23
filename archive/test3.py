@@ -60,8 +60,8 @@ class Button:
 
     def draw(self, img, is_hovered=False):
         color = self.hover_color if is_hovered else self.color
-        cv2.rectangle(img, (self.x, self.y), (self.x + self.w, self.y + self.h), color, -1)
-        cv2.rectangle(img, (self.x, self.y), (self.x + self.w, self.y + self.h), (50, 50, 50), 2)
+        cv2.rectangle(img, (self.x, self.y), (self.x + self.w, self.y + self.h), color, -1) # inside
+        cv2.rectangle(img, (self.x, self.y), (self.x + self.w, self.y + self.h), (50, 50, 50), 2) # boundary
         
         font = cv2.FONT_HERSHEY_SIMPLEX
         text_size = cv2.getTextSize(self.text, font, self.text_scale, 2)[0]
@@ -209,8 +209,15 @@ class HandGame:
         h, w, _ = img.shape
         thumb = hand_lms.landmark[4]
         index = hand_lms.landmark[8]
+        middle = hand_lms.landmark[12]
+        ring = hand_lms.landmark[16]
+        little = hand_lms.landmark[20]
+
         x4, y4 = int(thumb.x * w), int(thumb.y * h)
         x8, y8 = int(index.x * w), int(index.y * h)
+        x12, y12 = int(middle.x * w), int(middle.y * h)
+        x16, y16 = int(ring.x * w), int(ring.y * h)
+        x20, y20 = int(little.x * w), int(little.y * h)
         cx, cy = (x4 + x8) // 2, (y4 + y8) // 2
         length = math.hypot(x8 - x4, y8 - y4)
 

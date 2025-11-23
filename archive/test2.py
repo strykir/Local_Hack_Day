@@ -65,7 +65,7 @@ class HandGame:
         self.enemies = []
         self.score = 0
         self.spawn_timer = 0
-        self.spawn_interval = 1.0
+        self.spawn_interval = 0.5
 
         # --- UI Buttons ---
         # Center button for Start

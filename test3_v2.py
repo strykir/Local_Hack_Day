@@ -258,7 +258,16 @@ class HandGame:
         h, w, _ = img.shape
         thumb = hand_lms.landmark[4]
         index = hand_lms.landmark[8]
-        
+        middle = hand_lms.landmark[12]
+        ring = hand_lms.landmark[16]
+        little = hand_lms.landmark[20]
+
+        x4, y4 = int(thumb.x * w), int(thumb.y * h)
+        x8, y8 = int(index.x * w), int(index.y * h)
+        x12, y12 = int(middle.x * w), int(middle.y * h)
+        x16, y16 = int(ring.x * w), int(ring.y * h)
+        x20, y20 = int(little.x * w), int(little.y * h)
+
         # Convert normalized coordinates to pixel coordinates
         x4, y4 = int(thumb.x * w), int(thumb.y * h)
         x8, y8 = int(index.x * w), int(index.y * h)
