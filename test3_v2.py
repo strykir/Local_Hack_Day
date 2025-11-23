@@ -197,6 +197,10 @@ class HandGame:
         self.hand_clicked_status = {} 
         self.pinch_threshold = 20 # Pixels distance to trigger a click
 
+        # --- Fist Logic Variable ---
+        self.hand_fist_status = {}
+        self.fist_threshold = 60 # Distance between fingertips and knuckles to determine fist shape
+
         # --- Instantiate UI ---
         self.keyboard = VirtualKeyboard(400, 250)
         
@@ -278,16 +282,16 @@ class HandGame:
         r_length = math.hypot(x16 - x4, y16 - y4)
         l_length = math.hypot(x20 - x4, y20 - y4)
 
-        is_clicking = False
-        state_locked = self.hand_clicked_status.get(hand_id, False)
+        is_pinch = False
+        state_locked = self.hand_pinch_status.get(hand_id, False)
 
         # --- Debounce Logic ---
         if length < self.pinch_threshold:
             if not state_locked:
                 is_clicking = True
-                self.hand_clicked_status[hand_id] = True # Lock status
+                self.hand_pinch_status[hand_id] = True # Lock status
         else:
-            self.hand_clicked_status[hand_id] = False # Release lock
+            self.hand_pinch_status[hand_id] = False # Release lock
             
         cursor_data = {
             "pos": (cx, cy),
@@ -302,9 +306,9 @@ class HandGame:
 
     def detect_fist_logic(self, img, hand_lms, hand_id):
         """
-        Calculates fist distance between Thumb(4) and Index(8).
+        Calculates distance between fingertips and knuckle indeces, to figure out fist shape.
         Returns: 
-            is_clicking (bool): True ONLY on the frame the pinch starts.
+            is_fist (bool): True ONLY when fist made.
             cursor_data (dict): Position and geometric data for drawing later.
         """
         h, w, _ = img.shape
@@ -321,29 +325,34 @@ class HandGame:
         l_knuckle = hand_lms.landmark[17]
 
         # Convert normalized coordinates to pixel coordinates
+        x1, y1 = int(t_knuckle.x * w), int(t_knuckle.y * h)
         x4, y4 = int(thumb.x * w), int(thumb.y * h)
+        x5, y5 = int(i_knuckle.x * w), int(i_knuckle.y * h)
         x8, y8 = int(index.x * w), int(index.y * h)
+        x9, y9 = int(m_knuckle.x * w), int(m_knuckle.y * h)
         x12, y12 = int(middle.x * w), int(middle.y * h)
+        x13, y13 = int(r_knuckle.x * w), int(r_knuckle.y * h)
         x16, y16 = int(ring.x * w), int(ring.y * h)
+        x17, y17 = int(l_knuckle.x * w), int(l_knuckle.y * h)
         x20, y20 = int(little.x * w), int(little.y * h)
         cx, cy = (x4 + x8) // 2, (y4 + y8) // 2 # Midpoint
 
         # Distance
-        length = math.hypot(x8 - x4, y8 - y4)
-        m_length = math.hypot(x12 - x4, y12 - y4)
-        r_length = math.hypot(x16 - x4, y16 - y4)
-        l_length = math.hypot(x20 - x4, y20 - y4)
+        i_length = math.hypot(x8 - x5, y8 - y5)
+        m_length = math.hypot(x12 - x9, y12 - y9)
+        r_length = math.hypot(x16 - x13, y16 - y13)
+        l_length = math.hypot(x20 - x17, y20 - y17)
 
-        is_clicking = False
-        state_locked = self.hand_clicked_status.get(hand_id, False)
+        is_fist = False
+        state_locked = self.hand_fist_status.get(hand_id, False)
 
         # --- Debounce Logic ---
-        if length < self.pinch_threshold:
+        if (i_length < self.fist_threshold and m_length < self.fist_threshold and r_length < self.fist_threshold and l_length < self.fist_threshold):
             if not state_locked:
-                is_clicking = True
-                self.hand_clicked_status[hand_id] = True # Lock status
+                is_fist = True
+                self.hand_fist_status[hand_id] = True # Lock status
         else:
-            self.hand_clicked_status[hand_id] = False # Release lock
+            self.hand_fist_status[hand_id] = False # Release lock
             
         cursor_data = {
             "pos": (cx, cy),
@@ -352,9 +361,14 @@ class HandGame:
             "p3": (x12, y12),
             "p4": (x16, y16),
             "p5": (x20, y20),
-            "is_pinching": length < self.pinch_threshold
+            "k1": (x1, y1),
+            "k2": (x5, y5),
+            "k3": (x9, y9),
+            "k4": (x13, y13),
+            "k5": (x17, y17),
+            "is_fist": (i_length < self.fist_threshold and m_length < self.fist_threshold and r_length < self.fist_threshold and l_length < self.fist_threshold)
         }
-        return is_clicking, cursor_data
+        return is_fist, cursor_data
 
     def run(self):
         """The Main Game Loop"""

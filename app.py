@@ -52,6 +52,7 @@ class HandGame:
         self.btn_start = Button("START GAME", (540, 300))
         self.btn_records = Button("RECORDS", (540, 400))
         self.btn_exit = Button("EXIT", (540, 500))
+        self.btn_pause = Button("PAUSE", (670, 100))
         
         # 5. Difficulty
         self.btn_easy = Button("EASY", (300, 300), color=(150, 255, 150))
@@ -169,7 +170,7 @@ class HandGame:
 
             # --- STATE: LOGIN ---
             if self.state == "LOGIN":
-                cv2.putText(img, "PLEASE ENTER NAME", (400, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+                cv2.putText(img, "PLEASE ENTER NAME", (400, 80), cv2.FONT_HERSHEY_TRIPLEX , 1, (0,0,0), 2)
                 self.keyboard.draw(img, overlay, cursor_positions) 
                 self.btn_skip.draw_on_overlay(overlay, any(self.btn_skip.is_hovering(*c) for c in cursor_positions))
 
@@ -186,7 +187,7 @@ class HandGame:
 
             # --- STATE: ADD USER ---
             elif self.state == "ADD_USER_INPUT":
-                cv2.putText(img, "CREATE NEW USER", (400, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+                cv2.putText(img, "CREATE NEW USER", (400, 80), cv2.FONT_HERSHEY_TRIPLEX , 1, (0,0,0), 2)
                 self.keyboard.draw(img, overlay, cursor_positions)
                 self.btn_back_to_record_kb.draw_on_overlay(overlay, any(self.btn_back_to_record_kb.is_hovering(*c) for c in cursor_positions))
 
@@ -245,7 +246,7 @@ class HandGame:
             # --- STATE: MENU ---
             elif self.state == "MENU":
                 display_name = "Guest" if self.is_guest else self.current_user
-                cv2.putText(img, f"Welcome, {display_name}", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+                cv2.putText(img, f"Welcome, {display_name}", (50, 50), cv2.FONT_HERSHEY_TRIPLEX , 1, (0,0,0), 2)
                 
                 for btn in [self.btn_start, self.btn_records, self.btn_exit]:
                     is_hover = any(btn.is_hovering(*c) for c in cursor_positions)
@@ -258,7 +259,7 @@ class HandGame:
 
             # --- STATE: DIFFICULTY ---
             elif self.state == "DIFFICULTY":
-                cv2.putText(img, "SELECT DIFFICULTY", (450, 150), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0,0,0), 2)
+                cv2.putText(img, "SELECT DIFFICULTY", (450, 150), cv2.FONT_HERSHEY_TRIPLEX , 1.2, (0,0,0), 2)
                 for btn in [self.btn_easy, self.btn_med, self.btn_hard, self.btn_back]:
                     is_hover = any(btn.is_hovering(*c) for c in cursor_positions)
                     btn.draw_on_overlay(overlay, is_hover)
@@ -283,11 +284,26 @@ class HandGame:
 
             # --- STATE: PLAYING ---
             elif self.state == "PLAYING":
+                for btn in [self.btn_pause]:
+                    is_hover = any(btn.is_hovering(*c) for c in cursor_positions)
+                    btn.draw_on_overlay(overlay, is_hover)
+                    btn.draw_text_and_border(img)
+                for click_pos in all_clicks:
+                    if self.btn_pause.is_hovering(*click_pos): 
+                        cv2.putText(img, "PAUSED", (450, 300), cv2.FONT_HERSHEY_TRIPLEX , 2, (0, 0, 255), 4)
+                        time.sleep(1)
+                        while True:
+                            is_hover = any(self.btn_pause.is_hovering(*c) for c in cursor_positions)
+                            self.btn_pause.draw_on_overlay(overlay, is_hover)
+                            self.btn_pause.draw_text_and_border(img)
+                            if self.btn_pause.is_hovering(*click_pos): 
+                                break   
+
                 cv2.circle(img, self.center, 30, (0, 255, 0), -1)
-                cv2.putText(img, f"Score: {self.score}", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (255, 255, 0), 2)
-                cv2.putText(img, f"Diff: {self.current_difficulty}", (50, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (200, 200, 200), 2)
+                cv2.putText(img, f"Score: {self.score}", (50, 50), cv2.FONT_HERSHEY_TRIPLEX , 1.2, (255, 255, 0), 2)
+                cv2.putText(img, f"Diff: {self.current_difficulty}", (50, 90), cv2.FONT_HERSHEY_TRIPLEX , 0.8, (200, 200, 200), 2)
                 if self.is_guest:
-                     cv2.putText(img, "GUEST MODE (NO SAVE)", (50, 130), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (100, 100, 255), 2)
+                     cv2.putText(img, "GUEST MODE (NO SAVE)", (50, 130), cv2.FONT_HERSHEY_TRIPLEX , 0.6, (100, 100, 255), 2)
                 
                 if time.time() - self.last_spawn_time > self.spawn_interval:
                     self.spawn_enemy()
@@ -317,8 +333,8 @@ class HandGame:
             # --- STATE: GAME OVER ---
             elif self.state == "GAME_OVER":
                 cv2.rectangle(overlay, (0,0), (self.width, self.height), (0,0,0), -1)
-                cv2.putText(img, "GAME OVER", (450, 300), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 4)
-                cv2.putText(img, f"Final Score: {self.score}", (500, 380), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+                cv2.putText(img, "GAME OVER", (450, 300), cv2.FONT_HERSHEY_TRIPLEX , 2, (0, 0, 255), 4)
+                cv2.putText(img, f"Final Score: {self.score}", (500, 380), cv2.FONT_HERSHEY_TRIPLEX , 1, (255, 255, 255), 2)
                 
                 self.btn_back.draw_on_overlay(overlay, any(self.btn_back.is_hovering(*c) for c in cursor_positions))
                 
@@ -329,20 +345,20 @@ class HandGame:
             # --- STATE: RECORDS ---
             elif self.state == "RECORDS":
                 cv2.rectangle(overlay, (100, 100), (1180, 680), (240, 240, 240), -1)
-                cv2.putText(img, "PLAYER RECORDS", (480, 150), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (50, 50, 50), 3)
+                cv2.putText(img, "PLAYER RECORDS", (480, 150), cv2.FONT_HERSHEY_TRIPLEX , 1.2, (50, 50, 50), 3)
                 
                 if self.is_guest:
-                    cv2.putText(img, "Guest User - No Records Found", (350, 300), cv2.FONT_HERSHEY_SIMPLEX, 1, (100,100,100), 2)
+                    cv2.putText(img, "Guest User - No Records Found", (350, 300), cv2.FONT_HERSHEY_TRIPLEX , 1, (100,100,100), 2)
                     buttons_to_draw = [self.btn_back_rec, self.btn_switch_user, self.btn_add_user]
                 else:
                     user_data = self.db.data.get(self.current_user, {})
                     y_offset = 220
-                    cv2.putText(img, f"User: {self.current_user}", (150, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+                    cv2.putText(img, f"User: {self.current_user}", (150, y_offset), cv2.FONT_HERSHEY_TRIPLEX , 1, (0,0,0), 2)
                     y_offset += 50
                     for diff in ["EASY", "NORMAL", "HARD"]:
                         d_data = user_data.get(diff, {"best_score": 0, "history": []})
                         text = f"{diff} - Best: {d_data['best_score']} | Games: {len(d_data['history'])}"
-                        cv2.putText(img, text, (150, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,100,0), 2)
+                        cv2.putText(img, text, (150, y_offset), cv2.FONT_HERSHEY_TRIPLEX , 0.7, (0,100,0), 2)
                         y_offset += 40
                     buttons_to_draw = [self.btn_back_rec, self.btn_delete_user, self.btn_switch_user, self.btn_add_user]
 
@@ -366,7 +382,7 @@ class HandGame:
             # --- STATE: SWITCH USER SELECT ---
             elif self.state == "SWITCH_USER_SELECT":
                 cv2.rectangle(overlay, (50, 50), (1230, 670), (240, 240, 240), -1)
-                cv2.putText(img, "SELECT USER", (520, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,0,0), 3)
+                cv2.putText(img, "SELECT USER", (520, 100), cv2.FONT_HERSHEY_TRIPLEX , 1.5, (0,0,0), 3)
 
                 for btn in self.user_buttons:
                     btn.draw_on_overlay(overlay, any(btn.is_hovering(*c) for c in cursor_positions))
@@ -396,12 +412,12 @@ class HandGame:
                 self.keyboard.draw_text(img)
                 self.btn_back_to_record_kb.draw_text_and_border(img)
             elif self.state == "CONFIRM_ACTION":
-                cv2.putText(img, f"Confirm name: '{self.keyboard.input_text}'?", (420, 300), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+                cv2.putText(img, f"Confirm name: '{self.keyboard.input_text}'?", (420, 300), cv2.FONT_HERSHEY_TRIPLEX , 1, (0,0,0), 2)
                 self.btn_confirm_yes.draw_text_and_border(img)
                 self.btn_confirm_no.draw_text_and_border(img)
             elif self.state == "CONFIRM_DELETE":
-                cv2.putText(img, "ARE YOU SURE?", (500, 250), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,0,0), 3)
-                cv2.putText(img, f"Delete User: {self.current_user}", (450, 320), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+                cv2.putText(img, "ARE YOU SURE?", (500, 250), cv2.FONT_HERSHEY_TRIPLEX , 1.5, (0,0,0), 3)
+                cv2.putText(img, f"Delete User: {self.current_user}", (450, 320), cv2.FONT_HERSHEY_TRIPLEX , 1, (0,0,0), 2)
                 self.btn_delete_yes.draw_text_and_border(img)
                 self.btn_delete_no.draw_text_and_border(img)
             elif self.state == "MENU": 

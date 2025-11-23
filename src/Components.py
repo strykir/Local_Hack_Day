@@ -18,7 +18,7 @@ class Button:
         
     def draw_text_and_border(self, img):
         cv2.rectangle(img, (self.x, self.y), (self.x + self.w, self.y + self.h), (50, 50, 50), 2)
-        font = cv2.FONT_HERSHEY_SIMPLEX
+        font = cv2.FONT_HERSHEY_TRIPLEX 
         scale = self.text_scale
         text_size = cv2.getTextSize(self.text, font, scale, 2)[0]
         while text_size[0] > self.w - 20: 
@@ -52,7 +52,7 @@ class VirtualKeyboard:
             
     def draw_text(self, img):
         cv2.rectangle(img, (400, 100), (880, 180), (0, 0, 0), 2)
-        cv2.putText(img, self.input_text + "|", (420, 160), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,0,0), 3)
+        cv2.putText(img, self.input_text + "|", (420, 160), cv2.FONT_HERSHEY_TRIPLEX , 1.5, (0,0,0), 3)
         buttons = self.keys + [self.btn_del, self.btn_enter]
         for btn in buttons:
             btn.draw_text_and_border(img)

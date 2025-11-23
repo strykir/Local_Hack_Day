@@ -14,5 +14,88 @@
             "best_score": 0,
             "history": []
         }
+    },
+    "S": {
+        "EASY": {
+            "best_score": 0,
+            "history": [
+                0
+            ]
+        },
+        "NORMAL": {
+            "best_score": 0,
+            "history": []
+        },
+        "HARD": {
+            "best_score": 0,
+            "history": []
+        }
+    },
+    "XX": {
+        "EASY": {
+            "best_score": 1,
+            "history": [
+                1
+            ]
+        },
+        "NORMAL": {
+            "best_score": 0,
+            "history": [
+                0
+            ]
+        },
+        "HARD": {
+            "best_score": 0,
+            "history": []
+        }
+    },
+    "XO": {
+        "EASY": {
+            "best_score": 1,
+            "history": [
+                0,
+                1
+            ]
+        },
+        "NORMAL": {
+            "best_score": 0,
+            "history": []
+        },
+        "HARD": {
+            "best_score": 0,
+            "history": []
+        }
+    },
+    "X": {
+        "EASY": {
+            "best_score": 0,
+            "history": [
+                0
+            ]
+        },
+        "NORMAL": {
+            "best_score": 0,
+            "history": []
+        },
+        "HARD": {
+            "best_score": 0,
+            "history": []
+        }
+    },
+    "R": {
+        "EASY": {
+            "best_score": 0,
+            "history": []
+        },
+        "NORMAL": {
+            "best_score": 0,
+            "history": [
+                0
+            ]
+        },
+        "HARD": {
+            "best_score": 0,
+            "history": []
+        }
     }
 }
