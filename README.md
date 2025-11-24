@@ -104,27 +104,23 @@ Pause options include:
 ## 👾 Enemy Types & Strategies
 
 ### **1. The Swarm — Pinch Type**
-- Folder: `icons/pinch/`
 - Appearance: Various Debris (Rocks, spikes, etc.)
 - Behavior: Fast and numerous
 - Counter: **Use Pinch gestures**
 
 #### Appearance
-![pinch1](src/icons/pinch/1.png)
-![pinch1](src/icons/pinch/2.png)
-![pinch1](src/icons/pinch/3.png)
+<p> <img src="src/icons/pinch/1.png" width="100"> <img src="src/icons/pinch/2.png" width="100"> <img src="src/icons/pinch/3.png" width="100"> </p>
 
 ---
 
 ### **2. The Blockade — Fist Type**
-- Folder: `icons/fist/`
-- Appearance: Pink Creatures
+- Appearance: UFOs (+ creatures)
 - Behavior: Heavy armor / special enemy
 - Counter: **Use Fist (Pinch has no effect)**
 
 #### Appearance
-![fist1](src/icons/fist/ufo.png)
-![fist1](src/icons/fist/ufo2.png)
+<p><img src="src/icons/fist/ufo.png" width="100"><img src="src/icons/fist/ufo2.png" width="100"></p>
+
 ---
 
 ### Features:
