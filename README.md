@@ -107,7 +107,7 @@ Image assets are dynamically loaded from the `icons/` directory.
 
 ### **1. The Swarm — Pinch Type**
 - Folder: `icons/pinch/`
-- Default Appearance: Red circle
+- Appearance: Various Debris (Rocks, spikes, etc.)
 - Behavior: Fast and numerous
 - Counter: **Use Pinch gestures**
 
@@ -115,7 +115,7 @@ Image assets are dynamically loaded from the `icons/` directory.
 
 ### **2. The Blockade — Fist Type**
 - Folder: `icons/fist/`
-- Default Appearance: Blue square
+- Appearance: Pink Creatures
 - Behavior: Heavy armor / special enemy
 - Counter: **Use Fist (Pinch has no effect)**
 
