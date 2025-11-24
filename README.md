@@ -1,7 +1,7 @@
 # 🚀 Hand Game Ultimate: AR Space Defender
 
 **Hand Game Ultimate** is an interactive Augmented Reality (AR) defense game powered by real-time Computer Vision.  
-Using only your webcam, you control a spaceship and defend it from incoming enemies using hand gestures.
+Using only your webcam, you control a spaceship and defend it from incoming enemies using hand gestures. To use the menu, **pinch** the buttons with either hand.
 
 Built with **Python**, **OpenCV**, and **Google MediaPipe**.
 
@@ -64,7 +64,7 @@ pip install opencv-python mediapipe numpy
 3. Run the game:
 
 ```bash
-python main.py
+python app.py
 ```
 
 The game will launch in **Fullscreen Mode**.
@@ -85,8 +85,8 @@ If **any enemy** touches the ship → **Game Over**.
 
 | Action               | Gesture                           | Visual Indicator                       | Target Type                |
 |----------------------|------------------------------------|----------------------------------------|----------------------------|
-| Precision Shot       | Pinch (thumb + index finger)       | Small **green circle**                 | Red / Standard enemies     |
-| Heavy Strike         | Fist (closed hand)                 | Large **blue circle** + “FIST MODE”    | Blue / Armored enemies     |
+| Precision Shot       | Pinch (thumb + index finger)       | Small **green circle**                 | Various Debris     |
+| Heavy Strike         | Fist (closed hand)                 | Large **blue circle** + “FIST MODE”    | Creatures     |
 
 ---
 
@@ -103,13 +103,16 @@ Pause options include:
 
 ## 👾 Enemy Types & Strategies
 
-Image assets are dynamically loaded from the `icons/` directory.
-
 ### **1. The Swarm — Pinch Type**
 - Folder: `icons/pinch/`
 - Appearance: Various Debris (Rocks, spikes, etc.)
 - Behavior: Fast and numerous
 - Counter: **Use Pinch gestures**
+
+#### Appearance
+![pinch1](src/icons/pinch/1.png)
+![pinch1](src/icons/pinch/2.png)
+![pinch1](src/icons/pinch/3.png)
 
 ---
 
@@ -119,15 +122,10 @@ Image assets are dynamically loaded from the `icons/` directory.
 - Behavior: Heavy armor / special enemy
 - Counter: **Use Fist (Pinch has no effect)**
 
+#### Appearance
+![fist1](src/icons/fist/ufo.png)
+![fist1](src/icons/fist/ufo2.png)
 ---
-
-## 👤 Account System
-
-User data is stored in:
-
-```
-user_data/users.json
-```
 
 ### Features:
 - **Register** using an on-screen virtual keyboard
@@ -141,20 +139,10 @@ user_data/users.json
 
 ## 🤫 Secrets
 
-A hidden event exists when playing on **Normal** or **Hard** difficulty:
-
-### 🎯 Trigger Condition
-Score **≥ 64**
-
-### 👹 Event — “Deep Space Anomaly”
-There is a **90% chance** that a massive Boss enemy appears.
-
-- Asset: `icons/special/special_enemy.png`
+A hidden boss exists when playing on **Normal** or **Hard** difficulty:
 
 ### 🎁 Reward  
-If you manage to defeat the Boss using a **Fist Strike**, your spaceship will undergo a **temporary evolution** for the entire session:
-
-- Asset: `icons/special/special_ship.png`
+If you manage to defeat the Boss using a **Fist Strike**, your spaceship will undergo a **temporary evolution** for the rest of the session:
 
 Good luck, Commander.
 
